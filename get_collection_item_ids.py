@@ -9,14 +9,14 @@ def get_collection_info(x,y,z):
     return data['pager']
 
 
-
 def get_item_ids(x,y,z):
     col_info = get_collection_info(contentdm_url, col_id, start_rec)
     api_runs = (math.ceil(col_info['total']/1024))
 
     dict = {
         'collection': col_id,
-        'item_pointers': []
+        'item_pointers': [],
+        'cpds': []
     }
 
     count = 0
@@ -25,7 +25,10 @@ def get_item_ids(x,y,z):
         response = requests.get(my_call)
         data = response.json()
         for i in data['records']:
-            dict['item_pointers'].append(i['pointer'])
+            if i['filetype'] == 'cpd':
+                dict['cpds'].append(i['pointer'])
+            else:
+                dict['item_pointers'].append(i['pointer'])
         count += 1
         #print(count)
         #print(dict)
@@ -34,8 +37,14 @@ def get_item_ids(x,y,z):
         response = requests.get(my_call)
         data = response.json()
         for i in data['records']:
-            dict['item_pointers'].append(i['pointer'])
+            if i['filetype'] == 'cpd':
+                dict['cpds'].append(i['pointer'])
+            else:
+                dict['item_pointers'].append(i['pointer'])
         count += 1
         #print(count)
         #print(dict)
     return(dict)
+
+collection_data = get_item_ids(contentdm_url, col_id, start_rec)
+print(len(collection_data['item_pointers']), len(collection_data['cpds']))
